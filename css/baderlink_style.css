@@ -1,0 +1,371 @@
+body {
+    background-size: 100%;
+    background-repeat: no-repeat;
+    color: white;
+    text-align: center;
+    margin: 0px;
+    overflow: hidden;
+}
+
+.themes {
+    width: 98%;
+    margin: 0 auto;
+    margin-left: 2%;
+    margin-top: 2%;
+}
+
+.theme {
+    background: rgba(0, 0, 0, 0.75);
+    width: 14.1%;
+    text-align: center;
+    display: inline-block;
+    margin-right: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+.theme img {
+    width: 100%;
+}
+
+.theme span {
+    color: white;
+    display: block;
+    padding: 10px;
+}
+.notification {
+    display: flex;
+    top: 3%;
+    right: 2%;
+    position: fixed;
+    background-color: rgba(30, 30, 50, 0.5);
+    color: rgb(255, 255, 255);
+    padding: 0px;
+    border-radius: 30px;
+    box-shadow: 0px 0px 5px;
+    font-weight: bold;
+    animation: slide 500ms;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes slide {
+    from {
+        transform: translateX(120%);
+    }
+
+    to {
+        transform: translateX(0%);
+    }
+}
+
+.notification2 {
+    display: flex;
+    top: 3%;
+    right: 2%;
+    position: fixed;
+    background-color: rgba(30, 30, 50, 0.5);
+    color: rgb(255, 255, 255);
+    padding: 0px;
+    border-radius: 30px;
+    box-shadow: 0px 0px 5px;
+    font-weight: bold;
+    animation: slide2 500ms;
+    justify-content: center;
+    align-items: center;    
+}
+
+@keyframes slide2 {
+    from {
+        transform: translateX(0%);
+    }
+
+    to {
+        transform: translateX(120%);
+    }
+}
+#myProgress {
+    border: 5px solid #FFFFFF;
+    border-radius: 5px;
+    background-color: #ddd;
+    height: 45px;
+    position: absolute;
+    top: -130;
+    bottom: 0;
+    left: 150;
+    right: 150;
+    margin: auto;
+}
+
+#myBar {
+    width: 0%;
+    height: 40px;
+    background-color: #1b1b2e;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    font-size: 35px;
+    padding-top: 5px;
+}
+
+a {
+    text-decoration: none;
+}
+
+#jb-progress {
+    display: block;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 90px;
+    height: 34px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2ab934;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #2ab934;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(55px);
+    -ms-transform: translateX(55px);
+    transform: translateX(55px);
+}
+
+/*------ ADDED CSS ---------*/
+
+.on {
+    display: none;
+}
+
+.on,
+.off {
+    color: white;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    font-size: 10px;
+    font-family: Verdana, sans-serif;
+}
+
+input:checked+.slider .on {
+    display: block;
+}
+
+input:checked+.slider .off {
+    display: none;
+}
+
+/*--------- END --------*/
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+button {
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 20px 0 white;
+    border: 2px solid black;
+    border-radius: 10px 100px / 120px;
+    color: white;
+    text-decoration: none;
+    width: 200px;
+    height: 40px;
+    display: inline-table;
+    font-family: system-ui;
+    text-align: center;
+}
+
+button:focus,
+button:hover {
+    color: White;
+    box-shadow: 0 5px 50px 0 white;
+    background-color: #87FF33;
+    border-radius: 10px 100px / 120px;
+}
+
+h1 {
+    text-shadow: 0.1em 0.1em 0.2em black;
+    font-size: 25px;
+    text-align: center;
+    color: white;
+}
+
+#msgs2 {
+    font-weight: bold;
+    text-shadow: 4px 4px 4px black;
+    padding-right: 00px;
+    margin-right: 00px;
+    font-size: 17px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+#msgs {
+    text-shadow: 4px 4px 4px black;
+    font-size: 32px;
+}
+
+.header-title {
+    text-shadow: 4px 4px 4px black;
+    font-size: 32px;
+    color: #e5e4e2;
+}
+
+/* Baderlink specific styling for PSFree */
+.floating-menu {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.menu-btn {
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 20px 0 white;
+    border: 2px solid black;
+    border-radius: 10px 100px / 120px;
+    color: white;
+    margin: 5px;
+}
+
+.menu-btn:focus,
+.menu-btn:hover {
+    color: White;
+    box-shadow: 0 5px 50px 0 white;
+    background-color: #87FF33;
+    border-radius: 10px 100px / 120px;
+}
+
+.center-btn-wrap {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.ps-btn {
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 20px 0 white;
+    border: 2px solid black;
+    border-radius: 10px 100px / 120px;
+    color: white;
+    width: 200px;
+    height: 200px;
+    display: inline-block;
+    text-align: center;
+}
+
+.ps-btn:focus,
+.ps-btn:hover {
+    color: White;
+    box-shadow: 0 5px 50px 0 white;
+    background-color: #87FF33;
+    border-radius: 10px 100px / 120px;
+}
+
+.ps-btn svg {
+    width: 100px;
+    height: 100px;
+    fill: white;
+    margin-top: 50px;
+}
+
+.ps-btn:hover svg {
+    fill: #000;
+}
+
+.button-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.button-container button {
+    margin: 5px;
+}
+
+.header {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#PS4FW {
+    text-shadow: 0.1em 0.1em 0.2em black;
+    text-align: center;
+    color: #e5e4e2;
+}
+
+.popup {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+.close-btn {
+    margin-top: 15px;
+}
+
+#DebugConsole {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid white;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 80%;
+    color: white;
+}
+
+.console {
+    height: 150px;
+    overflow-y: auto;
+    text-align: left;
+    font-family: monospace;
+}
+
+.floating-menu-payloads {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.floating-menu-payloads button {
+    width: 150px;
+    margin: 0 5px;
+}
