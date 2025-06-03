@@ -1708,7 +1708,8 @@ export async function kexploit() {
     // If setuid is successful, we dont need to run the kexploit again
     try {
         if (sysi('setuid', 0) == 0) {
-            log("Not running kexploit again.")
+            log("Not running kexploit again.");
+            Exploit_done();
             return;
         }
     }
