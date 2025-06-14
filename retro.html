@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RetroArch Playlist Editor</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        color: #333;
+        margin: 20px;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #0056b3;
+        text-align: center;
+      }
+      .file-section,
+      .editor-section,
+      .add-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type='file'],
+      input[type='text'],
+      textarea {
+        width: calc(100% - 10px);
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      button.delete-btn {
+        background-color: #dc3545;
+      }
+      button.delete-btn:hover {
+        background-color: #c82333;
+      }
+      button.edit-btn {
+        background-color: #ffc107;
+        color: #333;
+      }
+      button.edit-btn:hover {
+        background-color: #e0a800;
+      }
+      button.save-edit-btn {
+        background-color: #28a745;
+      }
+      button.save-edit-btn:hover {
+        background-color: #218838;
+      }
+      #playlistEntries {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #eee;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 4px;
+      }
+      .entry-item {
+        background-color: #e9e9e9;
+        margin-bottom: 8px;
+        padding: 10px;
+        border-radius: 4px;
+        display: flex;
+        flex-wrap: wrap; /* Allow wrapping for better responsiveness */
+        justify-content: space-between;
+        align-items: center;
+      }
+      .entry-info {
+        flex-grow: 1;
+        flex-basis: 70%; /* Take more width */
+      }
+      .entry-actions {
+        flex-basis: 25%; /* Space for buttons */
+        display: flex;
+        justify-content: flex-end;
+        gap: 5px; /* Space between buttons */
+        margin-top: 10px; /* Space from info above */
+      }
+      .entry-info p {
+        margin: 0;
+        word-break: break-word;
+      }
+      .entry-info p strong {
+        color: #333;
+      }
+      .edit-fields {
+        width: 100%; /* Take full width when editing */
+        display: none; /* Hidden by default */
+        margin-top: 10px;
+      }
+      .edit-fields label {
+        margin-top: 10px;
+      }
+      .edit-fields input {
+        width: calc(100% - 20px); /* Adjust width for padding */
+      }
+      .edit-fields.active {
+        display: block; /* Show when active */
+      }
+      #statusMessage {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        display: none;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .warning-message {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>RetroArch Playlist Editor</h1>
+
+      <div class="file-section">
+        <h2>Open RetroArch Playlist File (.lpl)</h2>
+        <input type="file" id="playlistFile" accept=".lpl" />
+        <button onclick="loadFile()">Load File</button>
+        <button onclick="saveFile()" id="saveBtn" disabled>Save Changes</button>
+        <div id="statusMessage"></div>
+      </div>
+
+      <div class="editor-section">
+        <h2>Playlist Content</h2>
+        <div id="playlistEntries">
+          <p>Load a file to see its content.</p>
+        </div>
+      </div>
+
+      <div class="add-section">
+        <h2>Add New Entry</h2>
+        <label for="newPath">Game/Content Path:</label>
+        <input
+          type="text"
+          id="newPath"
+          placeholder="Example: D:/Games/ROMs/NES/MyGame.nes"
+        />
+
+        <label for="newLabel">Display Label:</label>
+        <input
+          type="text"
+          id="newLabel"
+          placeholder="Example: My Game Title"
+        />
+
+        <label for="newCorePath">Core Path:</label>
+        <input
+          type="text"
+          id="newCorePath"
+          placeholder="Example: default (for auto-detect) or C:/RetroArch/cores/nes_core.dll"
+        />
+
+        <label for="newCoreName">Core Name:</label>
+        <input
+          type="text"
+          id="newCoreName"
+          placeholder="Example: NES / Famicom (Nestopia UE)"
+        />
+
+        <label for="newCrc">CRC32 (Optional, usually left blank):</label>
+        <input type="text" id="newCrc" placeholder="Example: 00000000|crc" />
+
+        <label for="newDbName"
+          >Database Name (Playlist Name - Must match .lpl file name without
+          extension):</label
+        >
+        <input
+          type="text"
+          id="newDbName"
+          placeholder="Example: for Nintendo - NES.lpl use Nintendo - NES"
+        />
+        <button onclick="addEntry()">Add Entry</button>
+      </div>
+    </div>
+
+    <script>
+      let currentPlaylistData = null; // To store the loaded playlist data
+      let currentFileName = ''; // To store the current file name
+      const playlistEntriesDiv = document.getElementById('playlistEntries');
+      const saveBtn = document.getElementById('saveBtn');
+      const statusMessageDiv = document.getElementById('statusMessage');
+
+      function showStatus(message, isError = false) {
+        statusMessageDiv.textContent = message;
+        statusMessageDiv.className = 'status-message'; // Reset classes
+        if (isError) {
+          statusMessageDiv.classList.add('error');
+        } else {
+          statusMessageDiv.classList.remove('error');
+        }
+        statusMessageDiv.style.display = 'block'; // Show the message
+        setTimeout(() => {
+          statusMessageDiv.style.display = 'none'; // Hide after 5 seconds
+        }, 5000);
+      }
+
+      // Function to try and fix common JSON errors (like trailing commas)
+      function sanitizeJsonString(jsonString) {
+        // Regex to remove trailing commas from objects and arrays
+        // Matches a comma that is optionally followed by whitespace, then a closing bracket/brace
+        return jsonString.replace(/,(?=\s*[\]}])/g, '');
+      }
+
+      async function loadFile() {
+        const fileInput = document.getElementById('playlistFile');
+        const file = fileInput.files[0];
+
+        if (!file) {
+          showStatus('Please select an .lpl playlist file.', true);
+          return;
+        }
+
+        if (!file.name.endsWith('.lpl')) {
+          showStatus('The selected file is not a RetroArch playlist (.lpl).', true);
+          return;
+        }
+
+        currentFileName = file.name;
+        saveBtn.disabled = true; // Disable save until file is loaded
+        playlistEntriesDiv.innerHTML = '<p>Loading...</p>';
+
+        try {
+          let text = await file.text();
+          // Attempt to sanitize the JSON string before parsing
+          const sanitizedText = sanitizeJsonString(text);
+
+          currentPlaylistData = JSON.parse(sanitizedText); // Try parsing the sanitized text
+          renderPlaylistEntries();
+          saveBtn.disabled = false;
+          showStatus(`File "${file.name}" loaded successfully.`);
+        } catch (error) {
+          console.error('Error loading or parsing file:', error);
+          showStatus(`Error loading or parsing file: ${error.message}`, true);
+          currentPlaylistData = null;
+          playlistEntriesDiv.innerHTML =
+            '<p style="color: red;">Error loading or parsing file. Please ensure it\'s valid JSON or try to manually correct it if the automatic fix failed.</p>';
+        }
+      }
+
+      function renderPlaylistEntries() {
+        if (!currentPlaylistData || !currentPlaylistData.items) {
+          playlistEntriesDiv.innerHTML = '<p>No entries in this playlist.</p>';
+          return;
+        }
+
+        playlistEntriesDiv.innerHTML = ''; // Clear existing entries
+
+        currentPlaylistData.items.forEach((entry, index) => {
+          const entryDiv = document.createElement('div');
+          entryDiv.className = 'entry-item';
+          entryDiv.innerHTML = `
+            <div class="entry-info">
+              <p><strong>Label:</strong> <span id="label-${index}">${entry.label}</span></p>
+              <p><strong>Path:</strong> ${entry.path}</p>
+              <p><strong>Core:</strong> ${entry.core_name || 'N/A'}</p>
+              <p><strong>DB Name:</strong> ${entry.db_name || 'N/A'}</p>
+              <div class="warning-message">
+                <strong>Thumbnail Note:</strong> If you change the 'Label', remember to manually rename the corresponding thumbnail files (Boxart, Screenshot, Title) in your RetroArch thumbnails folder to match the new label. Example: 'your_new_label.png'
+              </div>
+            </div>
+            <div class="entry-actions">
+              <button class="edit-btn" onclick="toggleEdit(${index})">Edit</button>
+              <button class="delete-btn" onclick="deleteEntry(${index})">Delete</button>
+            </div>
+            <div class="edit-fields" id="edit-fields-${index}">
+                <label for="edit-path-${index}">Path:</label>
+                <input type="text" id="edit-path-${index}" value="${entry.path}" />
+
+                <label for="edit-label-${index}">Label:</label>
+                <input type="text" id="edit-label-${index}" value="${entry.label}" />
+
+                <label for="edit-core-path-${index}">Core Path:</label>
+                <input type="text" id="edit-core-path-${index}" value="${entry.core_path}" />
+
+                <label for="edit-core-name-${index}">Core Name:</label>
+                <input type="text" id="edit-core-name-${index}" value="${entry.core_name}" />
+
+                <label for="edit-crc-${index}">CRC32:</label>
+                <input type="text" id="edit-crc-${index}" value="${entry.crc32}" />
+
+                <label for="edit-db-name-${index}">DB Name:</label>
+                <input type="text" id="edit-db-name-${index}" value="${entry.db_name}" />
+
+                <button class="save-edit-btn" onclick="saveEditedEntry(${index})">Save Edit</button>
+                <button type="button" onclick="toggleEdit(${index})">Cancel</button>
+            </div>
+          `;
+          playlistEntriesDiv.appendChild(entryDiv);
+        });
+      }
+
+      function toggleEdit(index) {
+        const editFieldsDiv = document.getElementById(`edit-fields-${index}`);
+        editFieldsDiv.classList.toggle('active'); // Toggle visibility
+
+        // Populate fields if showing (in case of re-edit)
+        if (editFieldsDiv.classList.contains('active')) {
+          const entry = currentPlaylistData.items[index];
+          document.getElementById(`edit-path-${index}`).value = entry.path || '';
+          document.getElementById(`edit-label-${index}`).value = entry.label || '';
+          document.getElementById(`edit-core-path-${index}`).value =
+            entry.core_path || '';
+          document.getElementById(`edit-core-name-${index}`).value =
+            entry.core_name || '';
+          document.getElementById(`edit-crc-${index}`).value = entry.crc32 || '';
+          document.getElementById(`edit-db-name-${index}`).value =
+            entry.db_name || '';
+        }
+      }
+
+      function saveEditedEntry(index) {
+        if (!currentPlaylistData || !currentPlaylistData.items) {
+          showStatus('No entries to edit.', true);
+          return;
+        }
+
+        const newPath = document.getElementById(`edit-path-${index}`).value.trim();
+        const newLabel = document.getElementById(`edit-label-${index}`).value.trim();
+        const newCorePath = document.getElementById(`edit-core-path-${index}`).value.trim();
+        const newCoreName = document.getElementById(`edit-core-name-${index}`).value.trim();
+        const newCrc = document.getElementById(`edit-crc-${index}`).value.trim();
+        const newDbName = document.getElementById(`edit-db-name-${index}`).value.trim();
+
+        if (!newPath || !newLabel || !newDbName) {
+          showStatus(
+            'Path, Label, and Database Name are required fields for editing.',
+            true,
+          );
+          return;
+        }
+
+        const originalLabel = currentPlaylistData.items[index].label;
+
+        // Update the actual data in currentPlaylistData
+        currentPlaylistData.items[index].path = newPath;
+        currentPlaylistData.items[index].label = newLabel;
+        currentPlaylistData.items[index].core_path = newCorePath;
+        currentPlaylistData.items[index].core_name = newCoreName;
+        currentPlaylistData.items[index].crc32 = newCrc;
+        currentPlaylistData.items[index].db_name = newDbName;
+
+        renderPlaylistEntries(); // Re-render the list to reflect changes
+
+        if (originalLabel !== newLabel) {
+          showStatus(
+            `Entry "${originalLabel}" updated to "${newLabel}". IMPORTANT: Remember to rename your thumbnail files in RetroArch's thumbnails folder to match "${newLabel}".`,
+            false,
+          ); // Not an error, but an important note
+        } else {
+          showStatus(`Entry "${newLabel}" updated successfully.`);
+        }
+        toggleEdit(index); // Hide edit fields
+      }
+
+      function addEntry() {
+        if (!currentPlaylistData) {
+          showStatus('Please load a playlist file first.', true);
+          return;
+        }
+
+        const newPath = document.getElementById('newPath').value.trim();
+        const newLabel = document.getElementById('newLabel').value.trim();
+        const newCorePath = document.getElementById('newCorePath').value.trim();
+        const newCoreName = document.getElementById('newCoreName').value.trim();
+        const newCrc = document.getElementById('newCrc').value.trim();
+        const newDbName = document.getElementById('newDbName').value.trim();
+
+        if (!newPath || !newLabel || !newDbName) {
+          showStatus(
+            'Please fill in "Game/Content Path", "Display Label", and "Database Name" fields.',
+            true,
+          );
+          return;
+        }
+
+        const newEntry = {
+          path: newPath,
+          label: newLabel,
+          core_path: newCorePath || 'default', // 'default' is common for core_path
+          core_name: newCoreName || 'detect', // 'detect' is common for core_name
+          crc32: newCrc || '00000000|crc', // Default CRC32
+          db_name: newDbName,
+        };
+
+        if (!currentPlaylistData.items) {
+          currentPlaylistData.items = []; // Initialize if not present
+        }
+        currentPlaylistData.items.push(newEntry);
+        renderPlaylistEntries();
+        showStatus(`Successfully added "${newLabel}".`);
+
+        // Clear input fields
+        document.getElementById('newPath').value = '';
+        document.getElementById('newLabel').value = '';
+        document.getElementById('newCorePath').value = '';
+        document.getElementById('newCoreName').value = '';
+        document.getElementById('newCrc').value = '';
+        document.getElementById('newDbName').value = '';
+      }
+
+      function deleteEntry(index) {
+        if (!currentPlaylistData || !currentPlaylistData.items) {
+          showStatus('No entries to delete.', true);
+          return;
+        }
+
+        if (confirm(`Are you sure you want to delete "${currentPlaylistData.items[index].label}"?`)) {
+          const deletedLabel = currentPlaylistData.items[index].label;
+          currentPlaylistData.items.splice(index, 1); // Remove the item
+          renderPlaylistEntries();
+          showStatus(`Successfully deleted "${deletedLabel}".`);
+        }
+      }
+
+      async function saveFile() {
+        if (!currentPlaylistData) {
+          showStatus('No playlist file to save.', true);
+          return;
+        }
+
+        try {
+          const jsonString = JSON.stringify(currentPlaylistData, null, 2); // Pretty print JSON
+
+          const blob = new Blob([jsonString], { type: 'application/json' });
+          const suggestedFileName = currentFileName || 'new_playlist.lpl';
+
+          // Using the File System Access API for saving
+          if (window.showSaveFilePicker) {
+            const options = {
+              suggestedName: suggestedFileName,
+              types: [
+                {
+                  description: 'RetroArch Playlist File',
+                  accept: {
+                    'application/json': ['.lpl'],
+                  },
+                },
+              ],
+            };
+            const fileHandle = await window.showSaveFilePicker(options);
+            const writableStream = await fileHandle.createWritable();
+            await writableStream.write(blob);
+            await writableStream.close();
+            showStatus(`File successfully saved to "${fileHandle.name}".`);
+          } else {
+            // Fallback for browsers that don't support File System Access API
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = suggestedFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showStatus(
+              'File generated and ready for download. You might need to specify its location manually.',
+            );
+          }
+        } catch (error) {
+          console.error('Error saving file:', error);
+          showStatus(`Error saving file: ${error.message}`, true);
+        }
+      }
+    </script>
+  </body>
+</html>
