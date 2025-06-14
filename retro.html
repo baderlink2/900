@@ -1,179 +1,321 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RetroArch Playlist Editor</title>
+    <title>RetroArch Playlist Editor - Enhanced with Images</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: #333;
-        margin: 20px;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
       }
       .container {
-        max-width: 800px;
+        max-width: 1200px;
         margin: 0 auto;
         background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       }
       h1 {
-        color: #0056b3;
+        color: #4a5568;
         text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
       }
-      .file-section,
-      .editor-section,
-      .add-section {
-        margin-bottom: 20px;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #f9f9f9;
+      h2 {
+        color: #2d3748;
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 10px;
+        margin-top: 30px;
+      }
+      .section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: linear-gradient(145deg, #f7fafc, #edf2f7);
+      }
+      .image-section {
+        background: linear-gradient(145deg, #e6fffa, #b2f5ea);
+        border-color: #38b2ac;
       }
       label {
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
         font-weight: bold;
+        color: #2d3748;
       }
       input[type='file'],
       input[type='text'],
-      textarea {
-        width: calc(100% - 10px);
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+      input[type='url'],
+      textarea,
+      select {
+        width: calc(100% - 20px);
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 2px solid #cbd5e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+      input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
       button {
-        background-color: #007bff;
+        background: linear-gradient(135deg, #667eea, #764ba2);
         color: white;
-        padding: 10px 15px;
+        padding: 12px 20px;
         border: none;
-        border-radius: 4px;
+        border-radius: 8px;
         cursor: pointer;
         font-size: 16px;
-        margin-right: 10px;
+        margin: 5px;
+        transition: all 0.3s ease;
+        font-weight: bold;
       }
       button:hover {
-        background-color: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      button:disabled {
+        background: #a0aec0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
       button.delete-btn {
-        background-color: #dc3545;
-      }
-      button.delete-btn:hover {
-        background-color: #c82333;
+        background: linear-gradient(135deg, #e53e3e, #c53030);
       }
       button.edit-btn {
-        background-color: #ffc107;
-        color: #333;
-      }
-      button.edit-btn:hover {
-        background-color: #e0a800;
+        background: linear-gradient(135deg, #ed8936, #dd6b20);
       }
       button.save-edit-btn {
-        background-color: #28a745;
+        background: linear-gradient(135deg, #38a169, #2f855a);
       }
-      button.save-edit-btn:hover {
-        background-color: #218838;
+      button.load-last-btn {
+        background: linear-gradient(135deg, #3182ce, #2c5282);
+      }
+      button.image-btn {
+        background: linear-gradient(135deg, #38b2ac, #319795);
       }
       #playlistEntries {
-        max-height: 400px;
+        max-height: 500px;
         overflow-y: auto;
-        border: 1px solid #eee;
-        padding: 10px;
+        border: 2px solid #e2e8f0;
+        padding: 15px;
         background-color: #fff;
-        border-radius: 4px;
+        border-radius: 10px;
+        margin-top: 15px;
       }
       .entry-item {
-        background-color: #e9e9e9;
-        margin-bottom: 8px;
-        padding: 10px;
-        border-radius: 4px;
-        display: flex;
-        flex-wrap: wrap; /* Allow wrapping for better responsiveness */
-        justify-content: space-between;
-        align-items: center;
+        background: linear-gradient(145deg, #f7fafc, #edf2f7);
+        margin-bottom: 15px;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
       .entry-info {
-        flex-grow: 1;
-        flex-basis: 70%; /* Take more width */
+        margin-bottom: 15px;
       }
       .entry-actions {
-        flex-basis: 25%; /* Space for buttons */
         display: flex;
-        justify-content: flex-end;
-        gap: 5px; /* Space between buttons */
-        margin-top: 10px; /* Space from info above */
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
       }
       .entry-info p {
-        margin: 0;
+        margin: 8px 0;
         word-break: break-word;
       }
       .entry-info p strong {
-        color: #333;
+        color: #2d3748;
       }
       .edit-fields {
-        width: 100%; /* Take full width when editing */
-        display: none; /* Hidden by default */
-        margin-top: 10px;
-      }
-      .edit-fields label {
-        margin-top: 10px;
-      }
-      .edit-fields input {
-        width: calc(100% - 20px); /* Adjust width for padding */
+        display: none;
+        margin-top: 20px;
+        padding: 20px;
+        background: #f7fafc;
+        border-radius: 8px;
+        border: 2px solid #cbd5e0;
       }
       .edit-fields.active {
-        display: block; /* Show when active */
+        display: block;
+      }
+      .image-fields {
+        background: linear-gradient(145deg, #e6fffa, #b2f5ea);
+        border: 2px solid #38b2ac;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+      }
+      .image-input-group {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: end;
+        margin-bottom: 10px;
+      }
+      .image-preview-small {
+        max-width: 80px;
+        max-height: 80px;
+        border: 2px solid #cbd5e0;
+        border-radius: 5px;
+        margin-top: 5px;
       }
       #statusMessage {
-        margin-top: 15px;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #c6f6d5;
+        color: #22543d;
+        border: 2px solid #9ae6b4;
         display: none;
+        font-weight: bold;
       }
       .error {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
+        background-color: #fed7d7;
+        color: #742a2a;
+        border-color: #fc8181;
       }
       .warning-message {
-        background-color: #fff3cd;
-        color: #856404;
-        border: 1px solid #ffeeba;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 10px;
+        background-color: #fefcbf;
+        color: #744210;
+        border: 2px solid #f6e05e;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
         font-size: 0.9em;
+      }
+      .auto-load-section {
+        background: linear-gradient(145deg, #ebf8ff, #bee3f8);
+        border: 2px solid #63b3ed;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+      .checkbox-container input[type="checkbox"] {
+        width: auto;
+        margin-right: 15px;
+        margin-bottom: 0;
+        transform: scale(1.2);
+      }
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .info-box {
+        background: linear-gradient(145deg, #e6fffa, #b2f5ea);
+        border: 2px solid #4fd1c7;
+        color: #234e52;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 0.9em;
+      }
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background-color: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 10px 0;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .download-section {
+        background: linear-gradient(145deg, #fef5e7, #fed7aa);
+        border: 2px solid #f6ad55;
+        text-align: center;
+        padding: 30px;
+        margin-top: 30px;
+      }
+      .proxy-status {
+        background: linear-gradient(145deg, #e6fffa, #b2f5ea);
+        border: 2px solid #38b2ac;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .proxy-status.offline {
+        background: linear-gradient(145deg, #fed7d7, #fc8181);
+        border-color: #e53e3e;
+        color: #742a2a;
+      }
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+          margin: 10px;
+        }
+        .image-input-group {
+          grid-template-columns: 1fr;
+        }
+        .button-group {
+          flex-direction: column;
+        }
+        button {
+          width: 100%;
+          margin: 5px 0;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>RetroArch Playlist Editor</h1>
+      <h1>🎮 RetroArch Playlist Editor - Enhanced with Images</h1>
 
-      <div class="file-section">
-        <h2>Open RetroArch Playlist File (.lpl)</h2>
+      <div class="proxy-status" id="proxyStatus">
+        <p>🔄 Checking image processing server status...</p>
+      </div>
+
+      <div class="section">
+        <h2>📁 Open RetroArch Playlist File (.lpl)</h2>
         <input type="file" id="playlistFile" accept=".lpl" />
         <button onclick="loadFile()">Load File</button>
         <button onclick="saveFile()" id="saveBtn" disabled>Save Changes</button>
         <div id="statusMessage"></div>
       </div>
 
-      <div class="editor-section">
-        <h2>Playlist Content</h2>
+      <div class="section">
+        <h2>📋 Playlist Content</h2>
         <div id="playlistEntries">
-          <p>Load a file to see its content.</p>
+          <p>Load a file to view its content.</p>
         </div>
       </div>
 
-      <div class="add-section">
-        <h2>Add New Entry</h2>
+      <div class="section">
+        <h2>➕ Add New Entry</h2>
+        
+        <div class="auto-load-section">
+          <div class="checkbox-container">
+            <input type="checkbox" id="autoLoadLastGame" />
+            <label for="autoLoadLastGame">Auto-load last game data when adding new entry</label>
+          </div>
+          <div class="info-box">
+            <strong>Auto Mode:</strong> When enabled, the form will automatically fill with the last game's data whenever you start adding a new entry. This saves time when adding similar games.
+          </div>
+        </div>
+
         <label for="newPath">Game/Content Path:</label>
         <input
           type="text"
@@ -205,44 +347,143 @@
         <label for="newCrc">CRC32 (Optional, usually left blank):</label>
         <input type="text" id="newCrc" placeholder="Example: 00000000|crc" />
 
-        <label for="newDbName"
-          >Database Name (Playlist Name - Must match .lpl file name without
-          extension):</label
-        >
+        <label for="newDbName">Database Name (Playlist Name - Must match .lpl file name without extension):</label>
         <input
           type="text"
           id="newDbName"
           placeholder="Example: for Nintendo - NES.lpl use Nintendo - NES"
         />
-        <button onclick="addEntry()">Add Entry</button>
+
+        <div class="image-fields">
+          <h3>🖼️ Game Images</h3>
+          <div class="info-box">
+            <strong>Note:</strong> Add image URLs and they will be automatically downloaded and resized:
+            <br>• Named_Boxarts: 512×512 pixels (PNG)
+            <br>• Named_Snaps: 970×970 pixels (PNG)
+          </div>
+          
+          <div class="image-input-group">
+            <div>
+              <label for="newBoxartUrl">Boxart Image URL (512×512):</label>
+              <input type="url" id="newBoxartUrl" placeholder="https://example.com/boxart.jpg" />
+              <div id="newBoxartPreview"></div>
+            </div>
+            <button class="image-btn" onclick="previewNewImage('boxart')">Preview</button>
+          </div>
+
+          <div class="image-input-group">
+            <div>
+              <label for="newSnapUrl">Screenshot Image URL (970×970):</label>
+              <input type="url" id="newSnapUrl" placeholder="https://example.com/screenshot.jpg" />
+              <div id="newSnapPreview"></div>
+            </div>
+            <button class="image-btn" onclick="previewNewImage('snap')">Preview</button>
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button onclick="addEntry()">Add Entry</button>
+          <button class="load-last-btn" onclick="loadLastGameData()">Load Last Game Data</button>
+          <button onclick="clearForm()">Clear Form</button>
+        </div>
+      </div>
+
+      <div class="section download-section">
+        <h2>📦 Download Complete Package</h2>
+        <div class="info-box">
+          The compressed file will contain:
+          <br>• Updated .lpl file
+          <br>• Named_Boxarts folder (cover images 512×512)
+          <br>• Named_Snaps folder (screenshots 970×970)
+        </div>
+        <button onclick="downloadCompletePackage()" id="downloadBtn" disabled>
+          📥 Download Complete Package (ZIP)
+        </button>
+      </div>
+
+      <div class="progress-bar" id="imageProgress" style="display: none;">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-      let currentPlaylistData = null; // To store the loaded playlist data
-      let currentFileName = ''; // To store the current file name
+      let currentPlaylistData = null;
+      let currentFileName = '';
+      let gameImages = {}; // Store images for each game
+      let proxyServerUrl = 'http://localhost:5001'; // Default proxy server URL
+      let isProxyOnline = false;
+      
       const playlistEntriesDiv = document.getElementById('playlistEntries');
       const saveBtn = document.getElementById('saveBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
       const statusMessageDiv = document.getElementById('statusMessage');
+      const proxyStatusDiv = document.getElementById('proxyStatus');
+
+      // Check proxy server status on load
+      document.addEventListener('DOMContentLoaded', function() {
+        checkProxyStatus();
+        
+        const autoLoadSetting = localStorage.getItem('autoLoadLastGame');
+        if (autoLoadSetting === 'true') {
+          document.getElementById('autoLoadLastGame').checked = true;
+        }
+      });
+
+      // Save auto-load setting to localStorage when changed
+      document.getElementById('autoLoadLastGame').addEventListener('change', function() {
+        localStorage.setItem('autoLoadLastGame', this.checked);
+      });
+
+      async function checkProxyStatus() {
+        try {
+          const response = await fetch(`${proxyServerUrl}/api/health`);
+          if (response.ok) {
+            const data = await response.json();
+            isProxyOnline = true;
+            proxyStatusDiv.className = 'proxy-status';
+            proxyStatusDiv.innerHTML = '<p>✅ Image processing server is connected and ready</p>';
+          } else {
+            throw new Error('Server not responding');
+          }
+        } catch (error) {
+          isProxyOnline = false;
+          proxyStatusDiv.className = 'proxy-status offline';
+          proxyStatusDiv.innerHTML = `
+            <p>❌ Image processing server is not available</p>
+            <p style="font-size: 0.9em;">Please start the proxy server first to enable image downloading from external URLs</p>
+          `;
+        }
+      }
 
       function showStatus(message, isError = false) {
         statusMessageDiv.textContent = message;
-        statusMessageDiv.className = 'status-message'; // Reset classes
+        statusMessageDiv.className = 'status-message';
         if (isError) {
           statusMessageDiv.classList.add('error');
         } else {
           statusMessageDiv.classList.remove('error');
         }
-        statusMessageDiv.style.display = 'block'; // Show the message
+        statusMessageDiv.style.display = 'block';
         setTimeout(() => {
-          statusMessageDiv.style.display = 'none'; // Hide after 5 seconds
+          statusMessageDiv.style.display = 'none';
         }, 5000);
       }
 
-      // Function to try and fix common JSON errors (like trailing commas)
+      function showProgress(percent) {
+        const progressBar = document.getElementById('imageProgress');
+        const progressFill = document.getElementById('progressFill');
+        progressBar.style.display = 'block';
+        progressFill.style.width = percent + '%';
+        
+        if (percent >= 100) {
+          setTimeout(() => {
+            progressBar.style.display = 'none';
+          }, 1000);
+        }
+      }
+
       function sanitizeJsonString(jsonString) {
-        // Regex to remove trailing commas from objects and arrays
-        // Matches a comma that is optionally followed by whitespace, then a closing bracket/brace
         return jsonString.replace(/,(?=\s*[\]}])/g, '');
       }
 
@@ -251,7 +492,7 @@
         const file = fileInput.files[0];
 
         if (!file) {
-          showStatus('Please select an .lpl playlist file.', true);
+          showStatus('Please select a .lpl playlist file.', true);
           return;
         }
 
@@ -261,18 +502,24 @@
         }
 
         currentFileName = file.name;
-        saveBtn.disabled = true; // Disable save until file is loaded
+        saveBtn.disabled = true;
+        downloadBtn.disabled = true;
         playlistEntriesDiv.innerHTML = '<p>Loading...</p>';
 
         try {
           let text = await file.text();
-          // Attempt to sanitize the JSON string before parsing
           const sanitizedText = sanitizeJsonString(text);
 
-          currentPlaylistData = JSON.parse(sanitizedText); // Try parsing the sanitized text
+          currentPlaylistData = JSON.parse(sanitizedText);
           renderPlaylistEntries();
           saveBtn.disabled = false;
+          downloadBtn.disabled = false;
           showStatus(`File "${file.name}" loaded successfully.`);
+          
+          // Auto-load last game data if enabled
+          if (document.getElementById('autoLoadLastGame').checked) {
+            loadLastGameData();
+          }
         } catch (error) {
           console.error('Error loading or parsing file:', error);
           showStatus(`Error loading or parsing file: ${error.message}`, true);
@@ -282,23 +529,167 @@
         }
       }
 
+      async function previewImage(imageUrl, targetWidth, targetHeight, previewElementId) {
+        const previewDiv = document.getElementById(previewElementId);
+        
+        if (!imageUrl) {
+          showStatus('Please enter an image URL.', true);
+          return;
+        }
+
+        if (!isProxyOnline) {
+          showStatus('Image processing server is not available. Please start it first.', true);
+          return;
+        }
+
+        try {
+          showProgress(20);
+          previewDiv.innerHTML = '<p>Loading preview...</p>';
+          
+          const response = await fetch(`${proxyServerUrl}/api/proxy-image`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              url: imageUrl,
+              width: Math.min(targetWidth, 200),
+              height: Math.min(targetHeight, 200)
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          
+          if (data.success) {
+            showProgress(100);
+            previewDiv.innerHTML = `
+              <img src="${data.image_data}" class="image-preview-small" alt="Image preview">
+              <p style="font-size: 0.8em;">Original: ${data.original_size}</p>
+            `;
+            showStatus('Image preview loaded successfully.');
+          } else {
+            throw new Error(data.error || 'Failed to process image');
+          }
+          
+        } catch (error) {
+          showProgress(0);
+          previewDiv.innerHTML = '<p style="color: red;">Failed to load image</p>';
+          showStatus('Failed to load image: ' + error.message, true);
+        }
+      }
+
+      async function previewNewImage(type) {
+        const urlInput = type === 'boxart' ? 'newBoxartUrl' : 'newSnapUrl';
+        const previewId = type === 'boxart' ? 'newBoxartPreview' : 'newSnapPreview';
+        const targetSize = type === 'boxart' ? { width: 512, height: 512 } : { width: 970, height: 970 };
+        
+        const imageUrl = document.getElementById(urlInput).value.trim();
+        await previewImage(imageUrl, targetSize.width, targetSize.height, previewId);
+      }
+
+      async function processImageForGame(imageUrl, targetWidth, targetHeight) {
+        if (!isProxyOnline) {
+          throw new Error('Image processing server is not available');
+        }
+
+        const response = await fetch(`${proxyServerUrl}/api/proxy-image`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url: imageUrl,
+            width: targetWidth,
+            height: targetHeight
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+          return data.image_data;
+        } else {
+          throw new Error(data.error || 'Failed to process image');
+        }
+      }
+
+      function getLastGameData() {
+        if (!currentPlaylistData || !currentPlaylistData.items || currentPlaylistData.items.length === 0) {
+          return null;
+        }
+        
+        return currentPlaylistData.items[currentPlaylistData.items.length - 1];
+      }
+
+      function loadLastGameData() {
+        if (!currentPlaylistData) {
+          showStatus('Please load a playlist file first.', true);
+          return;
+        }
+
+        const lastGame = getLastGameData();
+        if (!lastGame) {
+          showStatus('No games found in the current playlist.', true);
+          return;
+        }
+
+        document.getElementById('newPath').value = lastGame.path || '';
+        document.getElementById('newLabel').value = lastGame.label || '';
+        document.getElementById('newCorePath').value = lastGame.core_path || '';
+        document.getElementById('newCoreName').value = lastGame.core_name || '';
+        document.getElementById('newCrc').value = lastGame.crc32 || '';
+        document.getElementById('newDbName').value = lastGame.db_name || '';
+
+        showStatus(`Loaded data from last game: "${lastGame.label}"`);
+      }
+
+      function clearForm() {
+        document.getElementById('newPath').value = '';
+        document.getElementById('newLabel').value = '';
+        document.getElementById('newCorePath').value = '';
+        document.getElementById('newCoreName').value = '';
+        document.getElementById('newCrc').value = '';
+        document.getElementById('newDbName').value = '';
+        document.getElementById('newBoxartUrl').value = '';
+        document.getElementById('newSnapUrl').value = '';
+        document.getElementById('newBoxartPreview').innerHTML = '';
+        document.getElementById('newSnapPreview').innerHTML = '';
+        showStatus('Form cleared.');
+      }
+
       function renderPlaylistEntries() {
         if (!currentPlaylistData || !currentPlaylistData.items) {
           playlistEntriesDiv.innerHTML = '<p>No entries in this playlist.</p>';
           return;
         }
 
-        playlistEntriesDiv.innerHTML = ''; // Clear existing entries
+        playlistEntriesDiv.innerHTML = '';
 
         currentPlaylistData.items.forEach((entry, index) => {
           const entryDiv = document.createElement('div');
           entryDiv.className = 'entry-item';
+          
+          // Get existing images for this game
+          const gameName = entry.label;
+          const hasBoxart = gameImages[gameName] && gameImages[gameName].boxart;
+          const hasSnap = gameImages[gameName] && gameImages[gameName].snap;
+          
           entryDiv.innerHTML = `
             <div class="entry-info">
               <p><strong>Label:</strong> <span id="label-${index}">${entry.label}</span></p>
               <p><strong>Path:</strong> ${entry.path}</p>
               <p><strong>Core:</strong> ${entry.core_name || 'N/A'}</p>
               <p><strong>DB Name:</strong> ${entry.db_name || 'N/A'}</p>
+              ${hasBoxart ? '<p><strong>Boxart:</strong> ✅ Added</p>' : ''}
+              ${hasSnap ? '<p><strong>Screenshot:</strong> ✅ Added</p>' : ''}
               <div class="warning-message">
                 <strong>Thumbnail Note:</strong> If you change the 'Label', remember to manually rename the corresponding thumbnail files (Boxart, Screenshot, Title) in your RetroArch thumbnails folder to match the new label. Example: 'your_new_label.png'
               </div>
@@ -326,6 +717,28 @@
                 <label for="edit-db-name-${index}">DB Name:</label>
                 <input type="text" id="edit-db-name-${index}" value="${entry.db_name}" />
 
+                <div class="image-fields">
+                  <h4>🖼️ Game Images</h4>
+                  
+                  <div class="image-input-group">
+                    <div>
+                      <label for="edit-boxart-${index}">Boxart Image URL (512×512):</label>
+                      <input type="url" id="edit-boxart-${index}" placeholder="https://example.com/boxart.jpg" />
+                      <div id="edit-boxart-preview-${index}"></div>
+                    </div>
+                    <button class="image-btn" onclick="previewEditImage(${index}, 'boxart')">Preview</button>
+                  </div>
+
+                  <div class="image-input-group">
+                    <div>
+                      <label for="edit-snap-${index}">Screenshot Image URL (970×970):</label>
+                      <input type="url" id="edit-snap-${index}" placeholder="https://example.com/screenshot.jpg" />
+                      <div id="edit-snap-preview-${index}"></div>
+                    </div>
+                    <button class="image-btn" onclick="previewEditImage(${index}, 'snap')">Preview</button>
+                  </div>
+                </div>
+
                 <button class="save-edit-btn" onclick="saveEditedEntry(${index})">Save Edit</button>
                 <button type="button" onclick="toggleEdit(${index})">Cancel</button>
             </div>
@@ -334,26 +747,31 @@
         });
       }
 
+      async function previewEditImage(index, type) {
+        const urlInput = `edit-${type}-${index}`;
+        const previewId = `edit-${type}-preview-${index}`;
+        const targetSize = type === 'boxart' ? { width: 512, height: 512 } : { width: 970, height: 970 };
+        
+        const imageUrl = document.getElementById(urlInput).value.trim();
+        await previewImage(imageUrl, targetSize.width, targetSize.height, previewId);
+      }
+
       function toggleEdit(index) {
         const editFieldsDiv = document.getElementById(`edit-fields-${index}`);
-        editFieldsDiv.classList.toggle('active'); // Toggle visibility
+        editFieldsDiv.classList.toggle('active');
 
-        // Populate fields if showing (in case of re-edit)
         if (editFieldsDiv.classList.contains('active')) {
           const entry = currentPlaylistData.items[index];
           document.getElementById(`edit-path-${index}`).value = entry.path || '';
           document.getElementById(`edit-label-${index}`).value = entry.label || '';
-          document.getElementById(`edit-core-path-${index}`).value =
-            entry.core_path || '';
-          document.getElementById(`edit-core-name-${index}`).value =
-            entry.core_name || '';
+          document.getElementById(`edit-core-path-${index}`).value = entry.core_path || '';
+          document.getElementById(`edit-core-name-${index}`).value = entry.core_name || '';
           document.getElementById(`edit-crc-${index}`).value = entry.crc32 || '';
-          document.getElementById(`edit-db-name-${index}`).value =
-            entry.db_name || '';
+          document.getElementById(`edit-db-name-${index}`).value = entry.db_name || '';
         }
       }
 
-      function saveEditedEntry(index) {
+      async function saveEditedEntry(index) {
         if (!currentPlaylistData || !currentPlaylistData.items) {
           showStatus('No entries to edit.', true);
           return;
@@ -365,39 +783,81 @@
         const newCoreName = document.getElementById(`edit-core-name-${index}`).value.trim();
         const newCrc = document.getElementById(`edit-crc-${index}`).value.trim();
         const newDbName = document.getElementById(`edit-db-name-${index}`).value.trim();
+        const boxartUrl = document.getElementById(`edit-boxart-${index}`).value.trim();
+        const snapUrl = document.getElementById(`edit-snap-${index}`).value.trim();
 
         if (!newPath || !newLabel || !newDbName) {
-          showStatus(
-            'Path, Label, and Database Name are required fields for editing.',
-            true,
-          );
+          showStatus('Path, Label, and Database Name are required fields for editing.', true);
           return;
         }
 
         const originalLabel = currentPlaylistData.items[index].label;
 
-        // Update the actual data in currentPlaylistData
-        currentPlaylistData.items[index].path = newPath;
-        currentPlaylistData.items[index].label = newLabel;
-        currentPlaylistData.items[index].core_path = newCorePath;
-        currentPlaylistData.items[index].core_name = newCoreName;
-        currentPlaylistData.items[index].crc32 = newCrc;
-        currentPlaylistData.items[index].db_name = newDbName;
+        try {
+          showProgress(10);
+          showStatus('Saving entry and processing images...');
 
-        renderPlaylistEntries(); // Re-render the list to reflect changes
+          // Process images if URLs are provided
+          if (boxartUrl || snapUrl) {
+            if (!gameImages[newLabel]) {
+              gameImages[newLabel] = {};
+            }
 
-        if (originalLabel !== newLabel) {
-          showStatus(
-            `Entry "${originalLabel}" updated to "${newLabel}". IMPORTANT: Remember to rename your thumbnail files in RetroArch's thumbnails folder to match "${newLabel}".`,
-            false,
-          ); // Not an error, but an important note
-        } else {
-          showStatus(`Entry "${newLabel}" updated successfully.`);
+            if (boxartUrl) {
+              showProgress(30);
+              const boxartData = await processImageForGame(boxartUrl, 512, 512);
+              gameImages[newLabel].boxart = {
+                dataUrl: boxartData,
+                originalUrl: boxartUrl,
+                size: '512x512'
+              };
+            }
+
+            if (snapUrl) {
+              showProgress(60);
+              const snapData = await processImageForGame(snapUrl, 970, 970);
+              gameImages[newLabel].snap = {
+                dataUrl: snapData,
+                originalUrl: snapUrl,
+                size: '970x970'
+              };
+            }
+          }
+
+          // Update images if label changed
+          if (originalLabel !== newLabel && gameImages[originalLabel]) {
+            if (!gameImages[newLabel]) {
+              gameImages[newLabel] = {};
+            }
+            // Merge existing images with new ones
+            gameImages[newLabel] = { ...gameImages[originalLabel], ...gameImages[newLabel] };
+            delete gameImages[originalLabel];
+          }
+
+          currentPlaylistData.items[index].path = newPath;
+          currentPlaylistData.items[index].label = newLabel;
+          currentPlaylistData.items[index].core_path = newCorePath;
+          currentPlaylistData.items[index].core_name = newCoreName;
+          currentPlaylistData.items[index].crc32 = newCrc;
+          currentPlaylistData.items[index].db_name = newDbName;
+
+          showProgress(100);
+          renderPlaylistEntries();
+
+          if (originalLabel !== newLabel) {
+            showStatus(`Entry "${originalLabel}" updated to "${newLabel}". IMPORTANT: Remember to rename your thumbnail files in RetroArch's thumbnails folder to match "${newLabel}".`);
+          } else {
+            showStatus(`Entry "${newLabel}" updated successfully.`);
+          }
+          toggleEdit(index);
+          
+        } catch (error) {
+          showProgress(0);
+          showStatus('Error processing images: ' + error.message, true);
         }
-        toggleEdit(index); // Hide edit fields
       }
 
-      function addEntry() {
+      async function addEntry() {
         if (!currentPlaylistData) {
           showStatus('Please load a playlist file first.', true);
           return;
@@ -409,38 +869,75 @@
         const newCoreName = document.getElementById('newCoreName').value.trim();
         const newCrc = document.getElementById('newCrc').value.trim();
         const newDbName = document.getElementById('newDbName').value.trim();
+        const boxartUrl = document.getElementById('newBoxartUrl').value.trim();
+        const snapUrl = document.getElementById('newSnapUrl').value.trim();
 
         if (!newPath || !newLabel || !newDbName) {
-          showStatus(
-            'Please fill in "Game/Content Path", "Display Label", and "Database Name" fields.',
-            true,
-          );
+          showStatus('Please fill in "Game/Content Path", "Display Label", and "Database Name" fields.', true);
           return;
         }
 
-        const newEntry = {
-          path: newPath,
-          label: newLabel,
-          core_path: newCorePath || 'default', // 'default' is common for core_path
-          core_name: newCoreName || 'detect', // 'detect' is common for core_name
-          crc32: newCrc || '00000000|crc', // Default CRC32
-          db_name: newDbName,
-        };
+        try {
+          showProgress(10);
+          showStatus('Adding entry and processing images...');
 
-        if (!currentPlaylistData.items) {
-          currentPlaylistData.items = []; // Initialize if not present
+          // Process images if URLs are provided
+          if (boxartUrl || snapUrl) {
+            if (!gameImages[newLabel]) {
+              gameImages[newLabel] = {};
+            }
+
+            if (boxartUrl) {
+              showProgress(30);
+              const boxartData = await processImageForGame(boxartUrl, 512, 512);
+              gameImages[newLabel].boxart = {
+                dataUrl: boxartData,
+                originalUrl: boxartUrl,
+                size: '512x512'
+              };
+            }
+
+            if (snapUrl) {
+              showProgress(60);
+              const snapData = await processImageForGame(snapUrl, 970, 970);
+              gameImages[newLabel].snap = {
+                dataUrl: snapData,
+                originalUrl: snapUrl,
+                size: '970x970'
+              };
+            }
+          }
+
+          const newEntry = {
+            path: newPath,
+            label: newLabel,
+            core_path: newCorePath || 'default',
+            core_name: newCoreName || 'detect',
+            crc32: newCrc || '00000000|crc',
+            db_name: newDbName,
+          };
+
+          if (!currentPlaylistData.items) {
+            currentPlaylistData.items = [];
+          }
+          currentPlaylistData.items.push(newEntry);
+          
+          showProgress(100);
+          renderPlaylistEntries();
+          showStatus(`Successfully added "${newLabel}".`);
+
+          clearForm();
+          
+          if (document.getElementById('autoLoadLastGame').checked) {
+            setTimeout(() => {
+              loadLastGameData();
+            }, 100);
+          }
+          
+        } catch (error) {
+          showProgress(0);
+          showStatus('Error processing images: ' + error.message, true);
         }
-        currentPlaylistData.items.push(newEntry);
-        renderPlaylistEntries();
-        showStatus(`Successfully added "${newLabel}".`);
-
-        // Clear input fields
-        document.getElementById('newPath').value = '';
-        document.getElementById('newLabel').value = '';
-        document.getElementById('newCorePath').value = '';
-        document.getElementById('newCoreName').value = '';
-        document.getElementById('newCrc').value = '';
-        document.getElementById('newDbName').value = '';
       }
 
       function deleteEntry(index) {
@@ -449,9 +946,14 @@
           return;
         }
 
-        if (confirm(`Are you sure you want to delete "${currentPlaylistData.items[index].label}"?`)) {
-          const deletedLabel = currentPlaylistData.items[index].label;
-          currentPlaylistData.items.splice(index, 1); // Remove the item
+        const deletedLabel = currentPlaylistData.items[index].label;
+        if (confirm(`Are you sure you want to delete "${deletedLabel}"?`)) {
+          // Remove associated images
+          if (gameImages[deletedLabel]) {
+            delete gameImages[deletedLabel];
+          }
+          
+          currentPlaylistData.items.splice(index, 1);
           renderPlaylistEntries();
           showStatus(`Successfully deleted "${deletedLabel}".`);
         }
@@ -464,12 +966,10 @@
         }
 
         try {
-          const jsonString = JSON.stringify(currentPlaylistData, null, 2); // Pretty print JSON
-
+          const jsonString = JSON.stringify(currentPlaylistData, null, 2);
           const blob = new Blob([jsonString], { type: 'application/json' });
           const suggestedFileName = currentFileName || 'new_playlist.lpl';
 
-          // Using the File System Access API for saving
           if (window.showSaveFilePicker) {
             const options = {
               suggestedName: suggestedFileName,
@@ -488,7 +988,6 @@
             await writableStream.close();
             showStatus(`File successfully saved to "${fileHandle.name}".`);
           } else {
-            // Fallback for browsers that don't support File System Access API
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -497,15 +996,83 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showStatus(
-              'File generated and ready for download. You might need to specify its location manually.',
-            );
+            showStatus('File generated and ready for download.');
           }
         } catch (error) {
           console.error('Error saving file:', error);
           showStatus(`Error saving file: ${error.message}`, true);
         }
       }
+
+      async function downloadCompletePackage() {
+        if (!currentPlaylistData) {
+          showStatus('Please load a playlist file first.', true);
+          return;
+        }
+
+        try {
+          showStatus('Creating compressed package...');
+          showProgress(10);
+
+          const zip = new JSZip();
+          
+          // Add the playlist file
+          const jsonString = JSON.stringify(currentPlaylistData, null, 2);
+          zip.file(currentFileName || 'playlist.lpl', jsonString);
+          showProgress(30);
+
+          // Create folders for images
+          const boxartFolder = zip.folder('Named_Boxarts');
+          const snapsFolder = zip.folder('Named_Snaps');
+          showProgress(40);
+
+          // Add images to respective folders
+          let imageCount = 0;
+          const totalImages = Object.values(gameImages).reduce((total, images) => total + Object.keys(images).length, 0);
+          
+          for (const [gameName, images] of Object.entries(gameImages)) {
+            if (images.boxart) {
+              // Convert data URL to blob
+              const response = await fetch(images.boxart.dataUrl);
+              const blob = await response.blob();
+              boxartFolder.file(`${gameName}.png`, blob);
+              imageCount++;
+              showProgress(40 + (imageCount / totalImages) * 40);
+            }
+            if (images.snap) {
+              // Convert data URL to blob
+              const response = await fetch(images.snap.dataUrl);
+              const blob = await response.blob();
+              snapsFolder.file(`${gameName}.png`, blob);
+              imageCount++;
+              showProgress(40 + (imageCount / totalImages) * 40);
+            }
+          }
+
+          showProgress(90);
+
+          // Generate and download the zip file
+          const zipBlob = await zip.generateAsync({ type: 'blob' });
+          showProgress(100);
+
+          const url = URL.createObjectURL(zipBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `RetroArch_Package_${currentFileName.replace('.lpl', '')}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          showStatus('Complete package created and downloaded successfully!');
+          
+        } catch (error) {
+          console.error('Error creating package:', error);
+          showStatus(`Error creating package: ${error.message}`, true);
+          showProgress(0);
+        }
+      }
     </script>
   </body>
 </html>
+
